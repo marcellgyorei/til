@@ -12,6 +12,9 @@
 \usepackage{geometry}
 \usepackage{xcolor}
 
+\usepackage{graphicx}
+\graphicspath{ {./image} }
+
 \geometry{left=18mm, right=18mm, top=20mm}
   \setlength\columnsep{30pt}
  
@@ -368,52 +371,97 @@ current	char					x
 \section{c++}
 
 \begin{lstlisting}[language=C]
-/*---------------------*/
-/* ACCEPTANCE CRITERIA */
-/*---------------------*/
-
-/*
-prep. strategy
-core basics
-data structures, algorithms
-test cases
-white-boarding
-coding style
-	readable - c++
-	modern - '20 subset
-	clear - cpp guidelines subset
-	performant - real-time, low comp. time subset
-*/
-
 /*------------------*/
 /* LEARNING SOURCES */
 /*------------------*/
 
-/*
-prep. strategy
+/* REAL-TIME */
 
-	xB1.13__Gayle - Cracking the Coding Interview 2015
+1st	C++_2.16__E_Christopher Kormanyos - Real-Time C++ 2021
+	[Appendix A - Tutorial page 439 and from chapter 3]
+
+	// vs code
+	// compiler explorer
+	// aUnx_0.0.1__Setup
 	
-core basics
-
-	c++ course extract
-	Pitt-Francis - Guide to Scientific Computing in C++ 2018
+/* CLEARITY */
 	
-
-data structures, algorithms
-test cases
-
-	2.15__+++Leetcode - C++ Python
+2nd	C++_2.18__E_Rainer - C++ Core Guidelines Explained 2022
+	/**/
+ref	C++_1.34__S_ISO_IEC 14882_2020 Sixth edition 2020
+ref	C++_2.17__S_Bjarne - CppCoreGuidelines
 	
-white-boarding
-coding style
-	readable - c++
-	modern - '20 subset
-	clear - cpp guidelines subset
-	performant - real-time, low comp. time subset
-*/
-		
+/* CORE BASICS 2020 & STL */
+
+2nd	C++_1.36__E_Pitt - Guide to Scientific Computing 2018
+ref	C++_1.31__E_Paul Deitel - C++ for Programmers 2022
+ref C++_1.28__E_Hacking C++ - C++ Cheat Sheets & Infogrph STL
+
+/* LOW BUILT-TIME */
+/* DATA STRUCTURES, ALGORITHMS */
+
+	C++_2.7__S_Joe Gibson - C++ Data Str & Algo Cheat Sheet
+
+/* TEST */
+
+	C++_2.15__E_Leetcode - C++
+
+/* REQS, DESIGN, SPECS */
+
+	// UML paperback
+	// omnigraffle/window/stencil/search uml
+	// sketch
+
+/* WHITE-BOARDING */
+/* DESIGN TOOL */
+/* TRADING TOOL */
 \end{lstlisting}
+
+
+\includegraphics[scale=0.3]{mcontroller}
+
+\begin{lstlisting}[language=C]
+/* KORMANYOS - REAL-TIME C++ 2021 */
+/* LED PROGRAM [PAGE 4] */
+
+#include <cstdint>
+#include "mcal_reg.h"
+
+class led
+{
+public:
+	typedef std::uint8_t port_type;
+	typedef std::uint8_t bval_type;
+	
+	led(const port_type p,
+		const bval_type b) : port(p),
+							 bval (b)
+
+\end{lstlisting}
+
+\begin{lstlisting}[language=C]
+// led.h
+class led
+{
+public:
+	led(const port_type p,
+		const bval_type b);
+	
+	void toggle() const;
+};	
+\end{lstlisting}
+\begin{lstlisting}[language=C]
+// led.cpp
+\end{lstlisting}
+
+\includegraphics[scale=0.5]{oo_mcontroller}
+
+\begin{lstlisting}[language=C]
+/* INHERITANCE [PAGE 76]*/
+\end{lstlisting}
+
+
+
 
 
 \section{c}
@@ -1210,8 +1258,29 @@ Hi username! You've successfully authenticated ..
 
 //  go back into root
 cd ~
+\end{lstlisting}
 
+\section*{notes}
 
+\begin{lstlisting}[language=C]
+/*-----------------------------*/
+/* APPENDIX - LEARNING SOURCES */
+/*-----------------------------*/
+
+/* SUPPLEMENTARY */
+
+	// https://cplusplus.com/doc/tutorial/functions/
+	// C++_4.12__Eijkhout - Intro to Scientific Pr in C++ 2022
+	// C++_1.24__Introduction to C++ MIT_6.096 2011
+	// C++_1.35__E_Marc Gregoire - Professional C++ 2021 [Int Ch]
+	// xB_1.13__E_Gayle - Cracking the Coding Interview 2015
+	// C++_2.8__Adnan Aziz - Elements of Programming Int 2015
+	// xB_1.12__E_Georgevich - The Complete Interview Answer
+	// Peter Sherar - N-CST-SSPP_ C++ Programming
+	// keywords: linked compilation
+	// C++_2.5__INT-S_Pat Morin - Open Data Structures.pdf
+	// Siemens - Parasolid kernel
+	// Siemens - D-Cubed constraint solver
 \end{lstlisting}
 
 \vfill\null
