@@ -56,7 +56,7 @@
 
 
 
-\section{workflow}
+\section*{bash + make + git + vim}
 
 \begin{lstlisting}[language=bash]
 #------------#
@@ -266,8 +266,6 @@ $ git status
 $ git restore .DS_Store
 # delete all local changes
 git reset --hard
-
-
 \end{lstlisting}
 
 \begin{lstlisting}[language=C]
@@ -365,6 +363,365 @@ current	char					x
 
 \end{lstlisting}
 
+\section*{vscode + cmake + llbd + catch}
+
+\begin{lstlisting}[language=bash]
+/#-----------------#/
+/# 0.1-KEYBINDINGS #/
+/#-----------------#/
+
+$ S-C-e							# explorer
+$ Cl-`							# terminal
+$ cd build && cmake .. && make	# build make files and ex
+/* or */
+$ F7							# build make files [cmake]
+$ C-S-b							# build task [cmake]
+/* */
+$ S-C-d							# run & debug
+$ S-C-p							# command palette
+
+/#------------#/
+/# 0.2-CONFIG #/
+/#------------#/
+
+# CMakeLists.txt				# cmake config [make]
+# .vscode/c_cpp_properties.json	# intellisense config
+# .vscode/tasks.json			# task built config [cmake] 
+# .vscode/launch.json			# run & debug [llbd+task]
+# build/compile_command.json  	# compiler commands [clang++]
+
+
+/#---------------------------------------#/
+/# 1-SETUP WORKSPACE CREATE SOURCE FILES #/
+/#---------------------------------------#/
+
+$ C-o							# add new folder to workspace
+$ C-k f							# close workspace	
+$ touch main.cpp				# add new file [bash] Cl-O-C-n
+$ S-C-f							# search
+$ C-s							# save
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+/#----------------------------#/
+/# 2.1-GENERATE CMakeList.txt #/
+/#----------------------------#/
+
+$ S-C-p
+^ CMAKE:Quick Start
+^ Clang 10.0.0
+^ projectname
+^ Executable
+
+$ F7							# cmake build from 
+								# compile_commands.json
+// or
+$ cd build $$ cmake	..			# build make files
+$ make							# build executable
+
+
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+/#---------------------------------------#/
+/# 2.2-ADD SOURCE FILES TO CMakeList.txt #/
+/#---------------------------------------#/
+
+/# to generate Make files using CMake */
+
+cmake_minimum_required(VERSION 3.0.0)
+project(pcmake VERSION 0.1.0)
+include(CTest)
+enable_testing()
+add_executable(HelloWorld main.cpp Pet.cpp)
+set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
+include(CPack)
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+/#------------------------#/
+/# 3.1-SETUP Intellisense #/
+/#------------------------#/
+
+^ C/C++:Edit Configuration (JSON)
+^ c_cpp_properties.json
+
+\end{lstlisting}
+
+\begin{lstlisting}[language=C]
+/*---------------------------------*/
+/* 3.2-CHECK c_cpp_properties.json */
+/*---------------------------------*/
+
+{
+"configurations": [
+{
+"name": "Mac",
+"includePath": [
+	"${workspaceFolder}/**",
+	// "${workspaceFolder}/include"
+],
+"defines": [],
+"macFrameworkPath": [
+	"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
+],
+"compilerPath": "/usr/bin/clang",
+"cStandard": "c17",
+"cppStandard": "c++17",
+"intelliSenseMode": "macos-clang-arm64",
+"configurationProvider": "ms-vscode.cmake-tools"
+
+}
+],
+"version": 4
+}
+
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+/#------------------------------#/
+/# 4.1-GENERATE CMake-Make TASK #/
+/#------------------------------#/
+
+$ touch ./.vscode/tasks.json		
+\end{lstlisting}
+
+\begin{lstlisting}[language=C]
+/*------------------------------------------------*/
+/* 4.2-INSERT CMake TASK COMMANDS INTO task.json  */
+/*------------------------------------------------*/
+
+/* assign CMake built process to a VSC task */
+
+{
+// See https://go.microsoft.com/fwlink/?LinkId=733558
+// for the documentation about the tasks.json format
+"version": "2.0.0",
+"isShellCommand":true,
+"options": {
+"cwd":"${workspaceRoot}/build"	// workspaceRoot is the 
+								// directory 			
+								// of the workspace
+},
+"tasks": [
+{
+"label": "cmake",				// allows vsc to reference the
+								// task name when running the 
+								//  task
+"command": "cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug ..", "type": "shell",
+"presentation": {
+"echo": true,
+"reveal": "always",
+"panel": "shared"
+}
+},
+{
+"label": "make",
+"command":"make -j 8",			// it means running the
+								// complier in parallel with 
+								// max 8 source files
+"presentation": {
+"echo": true,
+"reveal": "always",
+"panel": "shared"
+},
+"isBuildCommand":true			// if true to be executed with 
+								// Tasks: Run Build Task
+}
+]
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+/#----------#/
+/# RUN TASK #/
+/#----------#/
+
+^ Run Task
+^ cmake
+^ enter
+
+$ C-S-b
+
+// check
+$ .build/pcmake
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+/#----------------------#/
+/# GENERATE launch.json #/
+/#----------------------#/
+
+$ touch launch.json
+\end{lstlisting}
+
+\begin{lstlisting}[language=C]
+/*--------------------*/
+/* MODIFY launch.json */
+/*--------------------*/
+
+/* assign VSC task and llbd to run & debug */
+
+{
+// Use IntelliSense to learn about possible attributes.
+// Hover to view descriptions of existing attributes.
+// For more information, visit: https://go.microsoft.com/fwlink/? linkid=830387
+"version": "0.2.0",
+"configurations": [
+{
+"name": "(lldb) Launch",
+"type": "cppdbg",
+"request": "launch",
+"program": "${workspaceFolder}/build/pcmake",
+"args": [],
+"stopAtEntry": false,
+"cwd": "${workspaceFolder}",
+"environment": [],
+"externalConsole": true,
+"MIMode": "lldb"
+}
+]
+}
+\end{lstlisting}
+\begin{lstlisting}[language=bash]
+/#------------#/
+/# CHECK lldb #/
+/#------------#/
+
+$ which lldb
+$ F5
+
+\end{lstlisting}
+\begin{lstlisting}[language=bash]
+/#------------------#/
+/# SETUP GOOGLETEST #/
+/#------------------#/
+
+# C++_1.38__Introduction to Google Test and CMake
+# https://www.youtube.com/watch?v=OXwsD37qHPY
+
+$ C-k f
+$ mkdir gexample
+$ C-o
+$ git clone https://github.com/google/googletest.git
+$ touch CMakeList.txt
+\end{lstlisting}
+
+\begin{lstlisting}[language=make]
+cmake_minimum_required(VERSION 3.8)
+
+set(gexample) #[[project name]]
+
+project(${This} C CXX)
+
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON) #[[libraries & ex mixed]]
+
+enable_testing() #[[have unit test]]
+
+add_subdirectory(googletest) #[[add dependency]]
+
+#[[variables defining what will be built]
+set(Headers
+	Example.hpp
+)
+set(Sources
+	Example.cpp
+)
+
+#[[link other things to for programs - code is the library that is tested and statically linked, gtest is the program]]
+add_library(${This} STATIC ${Sources} ${Headers})
+
+#[[put the test into a subdirectory; it looks for another CMakeLists.txt and runs that in a child node in the build system]]
+add_subdirectory(test)
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+$ touch Example.cpp
+$ touch Example.hpp
+$ mkdir test
+$ touch CMakeLists.txt
+\end{lstlisting}
+
+\begin{lstlisting}[language=make]
+cmake_minimum_requied(VERSION 3.8)
+
+set(gexampletests)
+
+#[[no need for headers for tests]
+set(Sources
+	ExampleTests.cpp
+)
+#[[instead of making linked to the program we are making the program itself]]
+add_executable(${This} ${Sources})
+
+#[[linking in the main program into the test provided by googletest]]
+#[[need the thing testing]]
+#[[clue for the complier where to find header files]]
+target_link_libraries(${This} PUBLIC
+	gtest_main
+	Example
+)
+
+#[[this is a unit test]]
+add_test(
+	NAME ${This}
+	COMMAND ${This}
+)
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash]
+$ ExampleTests.cpp
+^ reload
+# builds the build system after choosing a compiler
+^ Clang 5.01
+# builds the executables
+$ F7
+
+# fix built-vscode directory name
+^ Preferences: OpenSettings (JSON)
+^ USER SETTINGS
+^ "cmake.buildDirectory": "${workspaceroot}/build", #line22
+
+# fix wether linked statically or dynamically (should be linked statically)
+^ build/CMakeCache.txt
+^ search: lib #line294
+^ gtest_force_shared_crt:BOOL=ON
+^ Clean rebuild #under CMake tab #find shortcut later to CMake Clean rebuild
+
+# run the test for vscode
+^ CMake: Run tests
+\end{lstlisting}
+
+\begin{lstlisting}[language=C]
+/*------------------------*/
+/* FILL ExampleTests.cpp  */
+/*------------------------*/
+
+#include <gtest/gtest.h>
+
+bool f() {
+	return false;
+}
+
+TEST(gexampletests, DemonstrateGtestMacros)
+	// sanity checking
+	EXPECT_TRUE(false);
+	// if we don't pass the line don't continue
+	ASSERT_TRUE(false);
+	EXPECT_EQ(true, true);
+	
+	// expected value first and actual value second
+	const bool result = f();
+	EXPECT_EQ(true, result); // that won't pass as return = false
+}
+// 15:55
+	
+\end{lstlisting}
+
+
 \vfill\null
 \columnbreak
 
@@ -378,36 +735,45 @@ current	char					x
 /* REAL-TIME */
 
 1st	C++_2.16__E_Christopher Kormanyos - Real-Time C++ 2021
-	[Appendix A - Tutorial page 439 and from chapter 3]
-
-	// vs code
-	// compiler explorer
-	// aUnx_0.0.1__Setup
 	
 /* CLEARITY */
 	
 2nd	C++_2.18__E_Rainer - C++ Core Guidelines Explained 2022
-	/**/
+/**/
+2nd C++_1.23__Jason Turner - C++ Best Practices 2020
 ref	C++_1.34__S_ISO_IEC 14882_2020 Sixth edition 2020
 ref	C++_2.17__S_Bjarne - CppCoreGuidelines
 	
 /* CORE BASICS 2020 & STL */
 
 2nd	C++_1.36__E_Pitt - Guide to Scientific Computing 2018
-ref	C++_1.31__E_Paul Deitel - C++ for Programmers 2022
+/**/
+ref C++_1.37__Bjarne - A Tour of C++ 2018
+ref C++_1.38__Bjarne - PPP C++ 2021
+/**/
+ref C++_1.31__E_Paul Deitel - C++ for Programmers 2022
 ref C++_1.28__E_Hacking C++ - C++ Cheat Sheets & Infogrph STL
 
 /* LOW BUILT-TIME */
 /* DATA STRUCTURES, ALGORITHMS */
 
-	C++_2.7__S_Joe Gibson - C++ Data Str & Algo Cheat Sheet
+C++_2.7__S_Joe Gibson - C++ Data Str & Algo Cheat Sheet
 
 /* TEST */
 
 	C++_2.15__E_Leetcode - C++
+	
+	/* TDD */
+	
+		C++_1.38__Introduction to Google Test and CMake
+	
+	/* COMPETITIVE PROGRAMMING */
 
 /* REQS, DESIGN, SPECS */
-
+/* EMBEDDED CPS */
+Edward Ashford Lee - Introduction to Embedded Systems 2017
+	UseCaseDiagram 
+	StructureModelling
 	// UML paperback
 	// omnigraffle/window/stencil/search uml
 	// sketch
@@ -415,6 +781,75 @@ ref C++_1.28__E_Hacking C++ - C++ Cheat Sheets & Infogrph STL
 /* WHITE-BOARDING */
 /* DESIGN TOOL */
 /* TRADING TOOL */
+
+
+/* ONLINE POOL */
+	STRATEGY
+	// https://medium.com/@alexander.s.augenstein/how-i-passed-the-c-code-interview-in-3-weeks-a3e350214a01
+	
+	PROBLEM SOLVING PATTERNS
+	// https://www.designgurus.io/blog/dont-just-leetcode
+
+\end{lstlisting}
+
+\begin{lstlisting}[language=C]
+/* DOCTEST */
+
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <doctest.h>
+
+int fact(int n) { retiung n <= 1 ? n : fact(n-1) * n; }
+
+TEST_CASE("testing the factorial function") {
+	CHECK(fact(0) == 1); // will fail
+	CHECK(fact(1) == 1);
+	CHECK(fact(2) == 2);
+	CHECK(fact(10) == 3628800);
+}
+// CppCon 2017
+\end{lstlisting}
+
+\begin{lstlisting}[language=C]
+
+/* PPP C++ */
+/* #17 VECTOR, POINTERS */
+	
+\end{lstlisting}
+
+
+\begin{lstlisting}[language=C]
+/* TURNER - C++ BEST PRACTICES 2020 */
+// #18
+
+float divide(float numerator, float denominator)
+{
+	return numerator / denominator;
+}
+
+int divide(int numerator, int denominator)
+{
+	return numerator / denominator;
+}
+
+template<typename Arithmetic>
+Arithmetic divide(Aritmetic numerator, Arithmetic denominator)
+{
+	return numerator / denominator;
+}
+
+// lambda alternative
+\end{lstlisting}
+
+\begin{lstlisting}[language=C]
+/* #35 STRONG TYPES (NO BOOLEAN ARGUMENTS) */
+
+struct Widget
+{
+	enum struct Visible { True, False };
+	enum struct Resizable { True, False };
+	
+	Widget(Visible visible, Resizable resizable);
+}	
 \end{lstlisting}
 
 
@@ -436,8 +871,32 @@ public:
 	led(const port_type p,
 		const bval_type b) : port(p),
 							 bval (b)
-
 \end{lstlisting}
+
+\begin{lstlisting}[language=C]
+/* COMPOUND ASSIGNMENT */
+
+	
+\end{lstlisting}
+
+
+
+\begin{lstlisting}[language=C]
+/* OBJECTS & INSTANCES [PAGE 12] */
+
+const led led_b5
+{
+	mcal::reg::portb,
+	mcal::reg::bval5
+};
+
+// led_b5 is an instance of the led class
+// parameters in the constructor of led_b5 use uniform initialization syntax
+// led_b5 is a constant object that wont be modified for the entire lifetime of the program
+// compiler initialize automatically the led_b5 static instance before would be used in main() - this called startup code
+\end{lstlisting}
+
+
 
 \begin{lstlisting}[language=C]
 // led.h
@@ -454,14 +913,106 @@ public:
 // led.cpp
 \end{lstlisting}
 
+\includegraphics[scale=0.7]{dot}
+\begin{lstlisting}[language=C]
+/* NUMERIC [PAGE 54] */	
+/* INNER PRODUCT */
+#include <array>
+#include <numeric>
+
+const std::array<int, 3U> u
+{
+	{ 1, 2, 3 }
+};
+
+const std::array<int, 3U> v
+{
+	{ 4, 5, 6 }
+};
+
+const int uv = std:inner_product(u.begin(),
+								 u.end(),
+								 v.begin(),
+								 0);
+$ 32
+
+
+\end{lstlisting}
+
+\begin{lstlisting}[language=C]
+/* RANDOM [PAGE 64] */	
+\end{lstlisting}
+
+
 \includegraphics[scale=0.5]{oo_mcontroller}
 
 \begin{lstlisting}[language=C]
 /* INHERITANCE [PAGE 76]*/
 \end{lstlisting}
 
+\begin{lstlisting}[language=C]
+/* CUSTOM MEMORY ALLOCATION [ON HEAP] [PAGE 238] */
+
+	
+\end{lstlisting}
 
 
+\begin{lstlisting}[language=C]
+/* RING ALLOCATOR [PAGE 244] */
+\end{lstlisting}
+
+
+
+\section*{strategy}
+
+\begin{itemize}
+\item Basic syntax
+\item Ranged for loops
+\item Templates
+\item Operator overloading
+\item Preprocessor statements and macros
+\item Namespaces
+\item Exceptions
+\item Const and mutable (and friend functions)
+\item Static and dynamic casting
+\item Pointers / void pointers / smart pointers
+\item Enums
+\item String streams
+\item Virtual functions and virtual inheritance and vtables
+\item Runtime type information (RTTI)
+\item Helpful 3rd party libraries (Qt, OpenGL, TensorFlow, OpenCV, Eigen, Drake)
+\item The Standard Library (STL) (containers , the algorithms over them , and the iterators that connect them)
+\item Visual studio debug tools (breakpoints, memory view)
+\item Package management
+\item g++
+\item gtest
+\item cmake
+\end{itemize}
+
+\vfill\null
+\vfill\null
+\columnbreak
+
+\section*{best practice}
+\begin{itemize}
+\item Memory allocation as initialization
+\item Dont use casts
+\item Avoid naked new and naked delete
+\item Avoid macros except for include guards
+\item Avoid unions
+\item Hide arrays from interfaces, keep them in low-level if needed
+\item Prefer immutable to mutable data
+\item Encapsulate messy constructs rather than spreading them thru the code
+\item Interfaces are the single most important aspect of code organization, make them explicit, encapsulate rule violations
+\item State preconditions, prefer Expects() for expressing preconditions and Ensures() for postconditions
+\item Prefer <vector> by default, prefer <array> to C-style arrays if needed
+\item C++98 added templates, containers, <algorithm>, <string>, <iostream>
+\item C++11 added auto, function pointers / lambdas, multithreading, regexp, smart pointers, hash tables
+\item C++14 added read-write locks, generic lambdas //C++17 added parallel algorithms
+\item C++20 added the spaceship operator and templated lambdas	
+\end{itemize}
+
+	
 
 
 \section{c}
@@ -1281,6 +1832,44 @@ cd ~
 	// C++_2.5__INT-S_Pat Morin - Open Data Structures.pdf
 	// Siemens - Parasolid kernel
 	// Siemens - D-Cubed constraint solver
+\end{lstlisting}
+
+\section{design}
+
+\begin{lstlisting}[language=C]
+
+	Cyber-Physical System Approach
+	
+		-Modelling [Dynamics = Evolution in Time]
+
+		   	-Actor Models [Continuous-time systems with Feedback Control; all modelled as Functions]:
+		   		
+		   		--- [Stage 0]
+		   		-Project [Logical]
+		   		--- [Stage 1]
+		   		-Context [Logical]
+		   		--- [Stage 2]
+				-Operation [Logical]
+				--- [Stage 2-3-4]
+				-System [Logical & Physical]
+				--- [Stage 5]
+		   		-Assembly [Physical]
+		   		-Product [Physical]
+		   		
+		   	-Abstract to High Fidelity Representations of dynamics and static properties of Actor Models
+		   	-Hierarchical State Machines
+		   	-Supervisory Control [Abstract Process on 5 Reps]
+		   	-Dataflow Models
+		   	-Time Models
+
+		-Design
+			-Memory Architectures
+			-Multitasking
+			-Scheduling
+			
+		-Analysis
+		   	-Requirements of Hierarchical State Machines
+
 \end{lstlisting}
 
 \vfill\null
